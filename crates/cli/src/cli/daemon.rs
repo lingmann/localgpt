@@ -110,7 +110,7 @@ pub fn daemonize_and_run(agent_id: &str) -> Result<()> {
 
     let daemonize = Daemonize::new()
         .pid_file(&pid_file)
-        .working_directory(std::env::current_dir()?)
+        .working_directory(config.workspace_path())
         .stdout(stdout)
         .stderr(stderr);
 
