@@ -1362,7 +1362,17 @@ impl Agent {
                                 break;
                             }
                             LLMResponseContent::ToolCalls(calls) => {
-                        // Notify about tool calls
+                        // Add assistant message with tool_use BEFORE executing tools
+                        // (Anthropic API requires tool_result to follow tool_use)
+                        self.session.add_message(Message {
+                            role: Role::Assistant,
+                            content: String::new(),
+                            tool_calls: Some(calls.clone()),
+                            tool_call_id: None,
+                            images: Vec::new(),
+                        });
+
+                        // Notify about tool calls and execute them
                         for call in &calls {
                             yield Ok(StreamEvent::ToolCallStart {
                                 name: call.name.clone(),
@@ -1393,15 +1403,6 @@ impl Agent {
                                 images: Vec::new(),
                             });
                         }
-
-                        // Add tool call message to session
-                        self.session.add_message(Message {
-                            role: Role::Assistant,
-                            content: String::new(),
-                            tool_calls: Some(calls),
-                            tool_call_id: None,
-                            images: Vec::new(),
-                        });
 
                         // Continue loop to get next response
                             }
