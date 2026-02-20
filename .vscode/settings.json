@@ -1,0 +1,4 @@
+{
+  "markdownlint.severityForError": "Ignore",
+  "markdownlint.severityForWarning": "Ignore"
+}
